@@ -1,0 +1,14 @@
+{
+    "GitHooks.hooksDirectory": ".git\\hooks",
+    "search.exclude": {
+        "**/.yarn": true,
+        "**/.pnp.*": true
+    },
+    "eslint.nodePath": ".yarn/sdks",
+    "stylelintPath": ".vscode/pnpify/stylelint",
+    "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
+    "typescript.tsdk": ".yarn/sdks/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "prettier.configPath": ".prettierrc.js",
+    "stylelint.configFile": ".stylelintrc.js"
+}
