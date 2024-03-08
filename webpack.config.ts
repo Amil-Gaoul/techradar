@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 
 type Mode = 'production' | 'development';
 
@@ -17,7 +18,8 @@ export default (env: Environment) => {
 
     const config: webpack.Configuration = {
         mode: env.mode ?? 'development',
-        entry: path.resolve(__dirname, 'src', 'index.ts'),
+        entry: path.resolve(__dirname, 'src', 'app.ts'),
+        devtool: isDev ? 'inline-source-map' : false,
         output: {
             path: path.resolve(__dirname, 'dist'),
             filename: '[name].[contenthash].js',
@@ -30,13 +32,26 @@ export default (env: Environment) => {
                     use: [isDev ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader']
                 },
                 {
-                    test: /\.ts$/,
-                    use: 'babel-loader',
+                    test: /\.tsx?$/,
+                    use: 'ts-loader',
                     exclude: /node_modules/
+                },
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [['@babel/preset-env']]
+                        }
+                    }
                 }
             ]
         },
         plugins: [
+            new CopyPlugin({
+                patterns: [{ from: 'static/assets', to: 'assets' }]
+            }),
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, 'public', 'index.html'),
                 minify: {
@@ -52,7 +67,9 @@ export default (env: Environment) => {
                     chunkFilename: 'styles/[name].[contenthash:8].css'
                 })
         ].filter(Boolean),
-        devtool: isDev ? 'inline-source-map' : false,
+        resolve: {
+            extensions: ['.tsx', '.ts', '.js']
+        },
         devServer: isDev
             ? {
                   watchFiles: path.resolve(__dirname, 'src'),
